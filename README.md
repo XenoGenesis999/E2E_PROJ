@@ -18,7 +18,7 @@ E2E_PROJ/
 │
 ├── models/
 │   ├── bronze/
-│   │   └── sample_dirty.sql         # Bronze table: raw ingested data (no transformations)
+│   │   └── sample_dirty.sql         # Bronze table: raw ingested data is polluted (nulls, duplicates, bad timestamps added)
 │   │
 │   ├── silver/
 │   │   ├── src_superstore.yml       # Source declarations for PROJ.BRONZE
