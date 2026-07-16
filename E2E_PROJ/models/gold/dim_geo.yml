@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: dim_geo
+    description: "Geography dimension derived from SAMPLE_CLEANED."
+
+    columns:
+      - name: geo_id
+        tests:
+          - not_null
+          - unique
+
+      - name: country
+        tests:
+          - not_null
+
+      - name: region
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['EAST', 'WEST', 'CENTRAL', 'SOUTH']

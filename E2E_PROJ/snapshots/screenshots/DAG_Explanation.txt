@@ -1,0 +1,32 @@
+This DAG (Directed Acyclic Graph) is a complete visual representation of my E2E_PROJ dbt project's data lineage, displaying all 9 nodes across three layers of the Medallion Architecture. Every node carries a green "Success" badge, confirming all models built and tested without errors.
+
+Layer 1 — Bronze (Sources)
+The two leftmost nodes are source declarations, not dbt-built models. They represent raw data registered in src_superstore.yml source file, pointing directly to tables that exist in PROJ.BRONZE in Snowflake.
+
+SAMPLE_DATA (PROJ.BRONZE) — The original, unmodified Superstore dataset ingested into Snowflake. To this, duplicates, nulls etc are added to create a dirty table which acts as a starting point for the Silver models.
+
+SAMPLE_DIRTY (PROJ.BRONZE) — A deliberately corrupted/noisy version of the same dataset, used as the starting point for the silver path.
+
+Both are typed as Source nodes (shield icon), meaning dbt treats them as external inputs — it tracks their freshness and documents them, but does not build or own them.
+
+Layer 2 — Bronze Model + Silver Views
+This middle column contains one Bronze table and two Silver views, all built by dbt.
+
+sample_dirty (PROJ.BRONZE — Table) — A dbt-managed Bronze table materialized from SAMPLE_DATA. It represents the raw ingested data with added corruptions, serving as a documented, version-controlled landing zone within the Bronze layer.
+
+sample_cleaned (PROJ.SILVER — View) — A strict Silver cleaning view derived from SAMPLE_DATA. It enforces tight business rules: valid timestamps, non-null critical fields, deduplication. This produces ~49 high-integrity rows and feeds the Gold layer's fact and dimension tables.
+
+sample_clean_relaxed (PROJ.SILVER — View) — A relaxed Silver cleaning view derived from SAMPLE_DIRTY. It applies softer cleaning rules (e.g., tolerates some nulls, relaxed timestamp checks), producing ~396 rows. It feeds segment_region (the Gold mart).
+
+Both Silver nodes are typed as View, meaning dbt does not physically store intermediate data — Snowflake computes them on-demand when queried, keeping storage costs low.
+
+Layer 3 — Gold Tables
+The four rightmost nodes are all dbt-materialized Tables in PROJ.GOLD — physically stored, query-optimized outputs ready for BI tools and analysts.
+
+dim_geo (PROJ.GOLD — Table) — A geography dimension table built from sample_cleaned. Contains deduplicated combinations of country, state, city, and region, each keyed by a SHA-256 hash geo_id. Enables consistent geographic slicing across reports.
+
+fct_sales (PROJ.GOLD — Backfill Job/Table) — The central incremental fact table built from sample_cleaned. Contains one row per cleaned sales transaction with measures (sales, profit, quantity, discount) and foreign-key-like columns linking to geography and product dimensions. The "Backfill Job" label indicates it uses an incremental materialization strategy with a delete+insert pattern.
+
+segment_region (PROJ.GOLD — Table) — An aggregated analytical mart built from sample_clean_relaxed. Pre-aggregates total_sales, total_profit, and total_quantity grouped by segment, region, and order_date. Designed for fast BI consumption without requiring analysts to write GROUP BY logic.
+
+dim_prod (PROJ.GOLD — Table) — A product dimension table built from sample_cleaned. Contains deduplicated category and sub_category combinations, each keyed by a SHA-256 hash product_id. Enables consistent product-level slicing across reports.

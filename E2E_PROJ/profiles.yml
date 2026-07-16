@@ -1,0 +1,10 @@
+E2E_PROJ:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      role: ACCOUNTADMIN
+      warehouse: COMPUTE_WH
+      database: PROJ
+      schema: SILVER
+      threads: 8

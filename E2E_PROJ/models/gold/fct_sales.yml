@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: fct_sales
+    description: "Incremental fact table built from PROJ.SILVER.SAMPLE_CLEANED."
+
+    columns:
+      - name: row_id
+        description: "Synthetic unique key for each cleaned sales row."
+        tests:
+          - not_null
+          - unique
+
+      - name: segment
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['CONSUMER', 'CORPORATE', 'HOME OFFICE']
+
+      - name: region
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['EAST', 'WEST', 'CENTRAL', 'SOUTH']
+
+      - name: ship_mode
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['STANDARD CLASS', 'SECOND CLASS', 'FIRST CLASS', 'SAME DAY']
+
+      - name: order_ts
+        tests:
+          - not_null
+     
+      - name: region
+        tests:
+          - relationships:
+              to: ref('dim_geo')
+              field: region
+
+      - name: category
+        tests:
+          - relationships:
+              to: ref('dim_prod')
+              field: category

@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: PROJ
+    schema: BRONZE
+    tables:
+      - name: SAMPLE_DATA
