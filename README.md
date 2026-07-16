@@ -44,7 +44,14 @@ E2E_PROJ/
 │
 ├── seeds/                           # (Reserved for future seed files)
 │
-├── snapshots/                       # (Reserved for future SCD snapshots)
+├── snapshots/                       
+│   ├── screenshots/                 # (Contains a few relevant screenshots and explantion of the DAG)
+│       ├── DAG_Explanation.txt      
+│       ├── DAG.png           
+│       ├── model1_ctd.png           # Model 1's properties and columns continued
+│       ├── model1.png               # Model 1's properties and columns
+│       ├── source_dirty_ctd.png     # SAMPLE_DIRTY 's properties and columns continued           
+│       └── source_dirty.png       # SAMPLE_DIRTY 's properties and columns 
 │
 ├── target/
 │   ├── manifest.json                # Full project graph (models, tests, sources)
